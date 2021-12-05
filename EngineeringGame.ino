@@ -1,8 +1,9 @@
 #include <Servo.h>
 #include <Wire.h>
 #include "pitches.h"
+#include "panel.h"
 
-int melody[] = {
+ int melody[] = {
 
   // Never Gonna Give You Up - Rick Astley
   // Score available at https://musescore.com/chlorondria_5/never-gonna-give-you-up_alto-sax
@@ -76,10 +77,12 @@ int melody[] = {
   NOTE_E5,4, NOTE_D5,2, REST,4
 };
 
+Panel panel(32,64);
+
 //pin inputs
-int joy_yellow = A4;
-int joy_orange = A5;
-int servoPin = 9;
+int joy_yellow = 10;
+int joy_orange = 11;
+int servoPin = 12;
 int buzzer = 13;
 //rgb matrix uses: A0, A1, A2, A3, (A4?), 2, 3, 4, 5, 6, 7, 8, 9
 
@@ -93,10 +96,14 @@ int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 int wholenote = (60000 * 4) / tempo;
 int divider = 0, noteDuration = 0;
 
+int i = 0;
+  
 void setup() {
   Serial.begin(9600);
   myservo.attach(servoPin);
-
+  pinMode(joy_yellow, INPUT_PULLUP);
+  pinMode(joy_orange, INPUT_PULLUP);
+  panel.createBufferBG(panel.BLACK);
   //play melody at start
   
 //  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
@@ -125,9 +132,12 @@ void setup() {
 }
  
 void loop() {
+  // Screen Inputs
+  drawPanel();
+  
   // Joystick Inputs
-  int joy_left = analogRead(A4);
-  int joy_right = analogRead(A5);
+  int joy_left = !digitalRead(joy_yellow);
+  int joy_right = !digitalRead(joy_orange);
   
   //Joystick Input Display on Serial Monitor
   Serial.print("left: ");
@@ -156,3 +166,20 @@ void loop() {
   
   
 }
+
+void drawPanel() {
+  panel.clearBuffer(panel.BLACK);
+//  panel.test();
+//    panel.fillScreenColor(panel.WHITE);
+//    delay(1000);
+  panel.drawRect(i, 0, i + 5, 15, panel.GREEN, true);
+  panel.drawRect((i + 15) % 64, 20, (i + 20) % 64, 32, panel.BLUE, true);
+////  panel.drawLine((i + 8) % 64, 5, (i + 13) % 64, 26, panel.GREEN);
+  i++;
+  if (i > 63) {
+    i = 0;
+  }
+  Serial.println(i);
+  panel.displayBuffer();
+}
+  
