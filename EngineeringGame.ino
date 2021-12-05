@@ -1,81 +1,10 @@
 #include <Servo.h>
 #include <Wire.h>
+#include <ezBuzzer.h>
 #include "pitches.h"
 #include "panel.h"
 
- int melody[] = {
-
-  // Never Gonna Give You Up - Rick Astley
-  // Score available at https://musescore.com/chlorondria_5/never-gonna-give-you-up_alto-sax
-  // Arranged by Chlorondria
-
-  NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,4, //1
-  NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
-  NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
-  NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
-  NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,4, //repeat from 1
-  NOTE_E5,-4, NOTE_FS5,-4, NOTE_A5,16, NOTE_G5,16, NOTE_FS5,8,
-  NOTE_D5,-4, NOTE_E5,-4, NOTE_A4,2,
-  NOTE_A4,16, NOTE_A4,16, NOTE_B4,16, NOTE_D5,8, NOTE_D5,16,
-  REST,4, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_D5,8, NOTE_E5,8, NOTE_CS5,-8,
-  NOTE_B4,16, NOTE_A4,2, REST,4, 
-
-  REST,8, NOTE_B4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,4, NOTE_A4,8, //7
-  NOTE_A5,8, REST,8, NOTE_A5,8, NOTE_E5,-4, REST,4, 
-  NOTE_B4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, NOTE_D5,8, NOTE_E5,8, REST,8,
-  REST,8, NOTE_CS5,8, NOTE_B4,8, NOTE_A4,-4, REST,4,
-  REST,8, NOTE_B4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, NOTE_A4,4,
-  NOTE_E5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,4, REST,4,
-   
-  NOTE_D5,2, NOTE_E5,8, NOTE_FS5,8, NOTE_D5,8, //13
-  NOTE_E5,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,4, NOTE_A4,4,
-  REST,2, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8,
-  REST,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-
-  NOTE_E5,-8, NOTE_E5,-8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,-8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16, //18
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,8, NOTE_A4,8, NOTE_A4,8, 
-  NOTE_E5,4, NOTE_D5,2, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_A5,4, NOTE_CS5,8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,4, NOTE_A4,8,  //23
-  NOTE_E5,4, NOTE_D5,2, REST,4,
-  REST,8, NOTE_B4,8, NOTE_D5,8, NOTE_B4,8, NOTE_D5,8, NOTE_E5,4, REST,8,
-  REST,8, NOTE_CS5,8, NOTE_B4,8, NOTE_A4,-4, REST,4,
-  REST,8, NOTE_B4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, NOTE_A4,4,
-  REST,8, NOTE_A5,8, NOTE_A5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8, NOTE_D5,8,
-  
-  REST,8, NOTE_A4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, //29
-  REST,8, NOTE_CS5,8, NOTE_B4,8, NOTE_A4,-4, REST,4,
-  NOTE_B4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, NOTE_A4,4, REST,8,
-  REST,8, NOTE_E5,8, NOTE_E5,8, NOTE_FS5,4, NOTE_E5,-4, 
-  NOTE_D5,2, NOTE_D5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,4, 
-  NOTE_E5,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,8, NOTE_A4,8, NOTE_A4,4,
-
-  REST,-4, NOTE_A4,8, NOTE_B4,8, NOTE_CS5,8, NOTE_D5,8, NOTE_B4,8, //35
-  REST,8, NOTE_E5,8, NOTE_FS5,8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_E5,-8, NOTE_E5,-8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,4, NOTE_A4,8, 
-
-   NOTE_E5,4, NOTE_D5,2, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16, //40
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_A5,4, NOTE_CS5,8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,4, NOTE_A4,8,  
-  NOTE_E5,4, NOTE_D5,2, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-   
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16, //45
-  NOTE_A5,4, NOTE_CS5,8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,4, NOTE_A4,8,  
-  NOTE_E5,4, NOTE_D5,2, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_FS5,-8, NOTE_FS5,-8, NOTE_E5,-4, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16, //45
-  
-  NOTE_A5,4, NOTE_CS5,8, NOTE_D5,-8, NOTE_CS5,16, NOTE_B4,8, NOTE_A4,16, NOTE_B4,16, NOTE_D5,16, NOTE_B4,16,
-  NOTE_D5,4, NOTE_E5,8, NOTE_CS5,-8, NOTE_B4,16, NOTE_A4,4, NOTE_A4,8, 
-
-  NOTE_E5,4, NOTE_D5,2, REST,4
-};
+ 
 
 Panel panel(32,64);
 
@@ -83,12 +12,16 @@ Panel panel(32,64);
 int joy_yellow = 10;
 int joy_orange = 11;
 int servoPin = 12;
-int buzzer = 13;
+int buzzerPin = 13;
+ezBuzzer buzzer(buzzerPin);
+
 //rgb matrix uses: A0, A1, A2, A3, (A4?), 2, 3, 4, 5, 6, 7, 8, 9
 
 Servo myservo;
-int position=100;
+int position=20;
 int speed=99;
+int destination = 20;
+int reached = 1;
 
 int tempo=114;
 
@@ -104,7 +37,8 @@ void setup() {
   pinMode(joy_yellow, INPUT_PULLUP);
   pinMode(joy_orange, INPUT_PULLUP);
   panel.createBufferBG(panel.BLACK);
-  //play melody at start
+
+  
   
 //  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
 //
@@ -132,6 +66,13 @@ void setup() {
 }
  
 void loop() {
+  buzzer.loop();
+
+  if (buzzer.getState() == BUZZER_IDLE) {
+      int length = sizeof(noteDurations) / sizeof(int);
+      buzzer.playMelody(melody, noteDurations, length); // playing
+    }
+   
   // Screen Inputs
   drawPanel();
   
@@ -149,20 +90,30 @@ void loop() {
   //Serial.println(position);
 
   //Servo Rotation
+ 
+ if (joy_right && reached && destination<20){
+    destination += 10;
+    reached = 0;
+    
+  }
+  else if (joy_left && reached && destination>0){
+    
+    destination-=10;
+    reached = 0;
+  }
 
-//  if (a0val<20 && position<200){
-//    myservo.writeMicroseconds(1750);
-//    position+=1;
-//    
-//  }
-//  else if (a1val<20 && a0val>10 && position>0){
-//    myservo.writeMicroseconds(1250);
-//    position-=1;
-//  }
-//  else{
-//    myservo.writeMicroseconds(1500);
-//    
-//  }
+  if (position>destination){
+    myservo.writeMicroseconds(1000);
+    position-=1;
+  }
+  else if (position<destination){
+    myservo.writeMicroseconds(2000);
+    position+=1;
+  }
+  else{
+    reached = 1;
+    myservo.writeMicroseconds(1500);
+  }
   
   
 }

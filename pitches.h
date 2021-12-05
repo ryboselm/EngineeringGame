@@ -89,3 +89,26 @@
 #define NOTE_DS8 4978
 #define REST 0
 #define END -1
+
+int melody[] = {
+  NOTE_E5, NOTE_E5, NOTE_E5,
+  NOTE_E5, NOTE_E5, NOTE_E5,
+  NOTE_E5, NOTE_G5, NOTE_C5, NOTE_D5,
+  NOTE_E5,
+  NOTE_F5, NOTE_F5, NOTE_F5, NOTE_F5,
+  NOTE_F5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5,
+  NOTE_E5, NOTE_D5, NOTE_D5, NOTE_E5,
+  NOTE_D5, NOTE_G5
+};
+
+// note durations: 4 = quarter note, 8 = eighth note, etc, also called tempo:
+int noteDurations[] = {
+  8, 8, 4,
+  8, 8, 4,
+  8, 8, 8, 8,
+  2,
+  8, 8, 8, 8,
+  8, 8, 8, 16, 16,
+  8, 8, 8, 8,
+  4, 4
+};
