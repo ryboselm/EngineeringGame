@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "Pitches.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,8 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 bool rain[32][8];
 int tick = 0;
 int note[32];
+int buzzerPin = 13;
+
 State gameState = INIT;
 int score = 0;
 
@@ -46,10 +49,10 @@ void drawInitialScreen() {
 void drawScore(){
   matrix.setFont(&TomThumb);
   matrix.fillRect(0, 0, 16, 32, matrix.Color333(0, 0, 0));
-  matrix.setCursor(0, 6);
+  matrix.setCursor(1, 6);
   matrix.setTextColor(matrix.Color333(7,0,0));
   matrix.print('S');
-  matrix.setCursor(3, 6);
+  matrix.setCursor(4, 6);
   matrix.setTextColor(matrix.Color333(7,7,0));
   matrix.print('C');
   matrix.setCursor(7, 6);
@@ -67,7 +70,7 @@ void drawScore(){
   itoa(score,buffer,10);
   int len = sizeof(buffer);
   for (int i=0; i<len; i++){
-    matrix.setCursor(7+3*i,15);
+    matrix.setCursor(3+4*i,15);
     matrix.print(buffer[i]);
   }
   
@@ -90,21 +93,21 @@ void rainLoop() {
   tick--;
 //
   matrix.fillRect(0, 0, 16, 32, matrix.Color333(0, 0, 0));
-  for (int row = 31; row >= 0 ; row--) {
-    for (int col = 0; col < 16; col++) {
-//      Serial.print("loop: ");
+//  for (int row = 31; row >= 0 ; row--) {
+//    for (int col = 0; col < 16; col++) {
+//     Serial.print("loop: ");
 //      Serial.print(row + ", ");
 //      Serial.println(col);
-
-      if (rain[row][col] != 0) {
-        matrix.drawLine(col, row, col, row + 1, matrix.Color333(0,0,7));
-        if (row < 32) {
-          rain[row + 1][col] = true; 
-        }
-        rain[row][col] = false;
-      }
-    }
-  }
+//
+//      if (rain[row][col] != 0) {
+//        matrix.drawLine(col, row, col, row + 1, matrix.Color333(0,0,7));
+//        if (row < 32) {
+//          rain[row + 1][col] = true; 
+//        }
+//        rain[row][col] = false;
+//      }
+//    }
+//  }
 }
 
 void clearNotes() {
@@ -112,10 +115,11 @@ void clearNotes() {
     note[i] = 0;  
   }
 }
-
+int melodycounter =0;
 void gameLoop(int pos) {
+  
   int x[6] = {1, 4, 6, 9, 11, 14};
-  if (tick >= 7) {
+  if (tick >= 32/noteDurations[melodycounter]) {
     note[7] = rand() % 3 + 1;
     tick = 0;
   }
@@ -141,12 +145,21 @@ void gameLoop(int pos) {
         note[row + 1] = col + 1;
       }
       else {
+        //tone
+        tone(buzzerPin, melody[melodycounter], 800/noteDurations[melodycounter%sizeof(melody)]);
+        Serial.println(melodycounter);
+        melodycounter++;
+        if (melodycounter>=sizeof(melody)/sizeof(int)){
+          melodycounter = 0;
+        }
         if (pos == col) {
           note[row] = 0;
           bumperColor = matrix.Color333(7, 7, 0);
           score++;
         }
         else {
+          noTone(buzzerPin);
+          melodycounter = 0;
           drawScore();
           delay(3000);
           gameState = INIT;
