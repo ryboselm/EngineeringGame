@@ -1,13 +1,15 @@
 #include "Screen.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
-
+using namespace std;
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 bool rain[32][8];
 int tick = 0;
 int note[32];
 State gameState = INIT;
+int score = 0;
 
 // Initializing screen
 void initScreen() {
@@ -21,6 +23,7 @@ void initScreen() {
 }
 
 void drawInitialScreen() {
+  score = 0;
   matrix.setFont(&TomThumb);
   matrix.fillRect(0, 0, 16, 32, matrix.Color333(0, 0, 0));
   matrix.setCursor(1, 6);
@@ -38,6 +41,37 @@ void drawInitialScreen() {
   matrix.setCursor(13, 6);
   matrix.setTextColor(matrix.Color333(0,0,7));
   matrix.print('T');
+}
+
+void drawScore(){
+  matrix.setFont(&TomThumb);
+  matrix.fillRect(0, 0, 16, 32, matrix.Color333(0, 0, 0));
+  matrix.setCursor(0, 6);
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.print('S');
+  matrix.setCursor(3, 6);
+  matrix.setTextColor(matrix.Color333(7,7,0));
+  matrix.print('C');
+  matrix.setCursor(7, 6);
+  matrix.setTextColor(matrix.Color333(0,7,0));
+  matrix.print('O');
+  matrix.setCursor(10, 6);
+  matrix.setTextColor(matrix.Color333(0,7,7));
+  matrix.print('R');
+  matrix.setCursor(13, 6);
+  matrix.setTextColor(matrix.Color333(0,0,7));
+  matrix.print('E');
+  
+  matrix.setTextColor(matrix.Color333(7,7,7));
+  char buffer[3];
+  itoa(score,buffer,10);
+  int len = sizeof(buffer);
+  for (int i=0; i<len; i++){
+    matrix.setCursor(7+3*i,15);
+    matrix.print(buffer[i]);
+  }
+  
+  
 }
 
 // This ticks backward (just so rand() kicks in properly; don't ask why
@@ -110,8 +144,11 @@ void gameLoop(int pos) {
         if (pos == col) {
           note[row] = 0;
           bumperColor = matrix.Color333(7, 7, 0);
+          score++;
         }
         else {
+          drawScore();
+          delay(3000);
           gameState = INIT;
           drawInitialScreen();
           delay(2000);
