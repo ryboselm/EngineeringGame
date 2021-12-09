@@ -1,15 +1,19 @@
 #include <Servo.h>
 #include <Wire.h>
 #include <ezBuzzer.h>
-#include "pitches.h"
-#include <RGBmatrixPanel.h>
-
-
+#include "Pitches.h"
+#include "Screen.h"
 
 //pin inputs
-int joy_yellow = 10;
-int joy_orange = 11;
-int servoPin = 12;
+//#define CLK  8
+//#define OE   9
+//#define LAT 10
+//#define A   A0
+//#define B   A1
+//#define C   A2
+int joy_yellow = A3;
+int joy_orange = A4;
+int servoPin = 11;
 int buzzerPin = 13;
 ezBuzzer buzzer(buzzerPin);
 
@@ -28,16 +32,14 @@ int wholenote = (60000 * 4) / tempo;
 int divider = 0, noteDuration = 0;
 
 int i = 0;
-
-RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
+int t1 = 0;
 
 void setup() {
-  matrix.begin();
-  drawInitialScreen();
   Serial.begin(9600);
-  myservo.attach(servoPin);
+//  myservo.attach(servoPin);
   pinMode(joy_yellow, INPUT_PULLUP);
   pinMode(joy_orange, INPUT_PULLUP);
+  initScreen();
 
   
   
@@ -67,19 +69,40 @@ void setup() {
 }
  
 void loop() {
-  buzzer.loop();
-
-  if (buzzer.getState() == BUZZER_IDLE) {
-      int length = sizeof(noteDurations) / sizeof(int);
-      buzzer.playMelody(melody, noteDurations, length); // playing
-    }
-   
-  // Screen Inputs
-  drawPanel();
-  
-  // Joystick Inputs
+  int screenDelay = 70;
+  int t2 = millis();
+  int tDelta = t2 - t1;
   int joy_left = !digitalRead(joy_yellow);
   int joy_right = !digitalRead(joy_orange);
+  
+  if (tDelta > screenDelay) {
+    switch(gameState) {
+    case INIT:
+      if (joy_left || joy_right) {
+        drawInitialScreen();
+        gameState = GAME;
+        clearNotes();
+      }
+      break;
+    case GAME:
+      int pos = -joy_left + 1 + joy_right;
+      Serial.println(pos);
+      gameLoop(pos);
+      break;
+    }
+    t1 = t2; 
+  }
+  
+//  buzzer.loop();
+//
+//  if (buzzer.getState() == BUZZER_IDLE) {
+//      int length = sizeof(noteDurations) / sizeof(int);
+//      buzzer.playMelody(melody, noteDurations, length); // playing
+//    }
+//   
+//  // Screen Inputs
+
+  // Joystick Inputs
   
   //Joystick Input Display on Serial Monitor
   Serial.print("left: ");
@@ -88,7 +111,7 @@ void loop() {
   Serial.print("right: ");
   Serial.print(joy_right);
   Serial.println("\t");
-  //Serial.println(position);
+  Serial.println(position);
 
   //Servo Rotation
  
@@ -118,16 +141,3 @@ void loop() {
   
   
 }
-
-
-void drawInitialScreen() {
-  matrix.setRotation(1);
-  matrix.setCursor(1, 0);
-  matrix.setTextColor(matrix.Color333(7,0,0));
-  matrix.print('1');
-  matrix.setTextColor(matrix.Color333(7,4,0));
-  matrix.print('6');
-}
-void drawPanel() {
-}
-  
