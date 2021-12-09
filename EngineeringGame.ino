@@ -2,11 +2,9 @@
 #include <Wire.h>
 #include <ezBuzzer.h>
 #include "pitches.h"
-#include "panel.h"
+#include <RGBmatrixPanel.h>
 
- 
 
-Panel panel(32,64);
 
 //pin inputs
 int joy_yellow = 10;
@@ -30,13 +28,16 @@ int wholenote = (60000 * 4) / tempo;
 int divider = 0, noteDuration = 0;
 
 int i = 0;
-  
+
+RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
+
 void setup() {
+  matrix.begin();
+  drawInitialScreen();
   Serial.begin(9600);
   myservo.attach(servoPin);
   pinMode(joy_yellow, INPUT_PULLUP);
   pinMode(joy_orange, INPUT_PULLUP);
-  panel.createBufferBG(panel.BLACK);
 
   
   
@@ -118,19 +119,15 @@ void loop() {
   
 }
 
+
+void drawInitialScreen() {
+  matrix.setRotation(1);
+  matrix.setCursor(1, 0);
+  matrix.setTextColor(matrix.Color333(7,0,0));
+  matrix.print('1');
+  matrix.setTextColor(matrix.Color333(7,4,0));
+  matrix.print('6');
+}
 void drawPanel() {
-  panel.clearBuffer(panel.BLACK);
-//  panel.test();
-//    panel.fillScreenColor(panel.WHITE);
-//    delay(1000);
-  panel.drawRect(i, 0, i + 5, 15, panel.GREEN, true);
-  panel.drawRect((i + 15) % 64, 20, (i + 20) % 64, 32, panel.BLUE, true);
-////  panel.drawLine((i + 8) % 64, 5, (i + 13) % 64, 26, panel.GREEN);
-  i++;
-  if (i > 63) {
-    i = 0;
-  }
-  Serial.println(i);
-  panel.displayBuffer();
 }
   
