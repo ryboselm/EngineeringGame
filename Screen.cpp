@@ -119,7 +119,7 @@ int melodycounter =0;
 void gameLoop(int pos) {
   
   int x[6] = {1, 4, 6, 9, 11, 14};
-  if (tick >= 32/noteDurations[melodycounter]) {
+  if (tick >= 48/noteDurations[melodycounter]) {
     note[7] = rand() % 3 + 1;
     tick = 0;
   }
@@ -146,7 +146,7 @@ void gameLoop(int pos) {
       }
       else {
         //tone
-        tone(buzzerPin, melody[melodycounter], 800/noteDurations[melodycounter%sizeof(melody)]);
+        tone(buzzerPin, melody[melodycounter], 1600/noteDurations[melodycounter%sizeof(melody)]);
         Serial.println(melodycounter);
         melodycounter++;
         if (melodycounter>=sizeof(melody)/sizeof(int)){
@@ -161,6 +161,11 @@ void gameLoop(int pos) {
           noTone(buzzerPin);
           melodycounter = 0;
           drawScore();
+          for (int i=0; i<sizeof(losemelody)/sizeof(int); i++){
+            tone(buzzerPin,losemelody[i]);
+            delay(100);
+            noTone(buzzerPin);
+          }
           delay(3000);
           gameState = INIT;
           drawInitialScreen();

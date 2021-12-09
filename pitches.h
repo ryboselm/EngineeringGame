@@ -112,3 +112,7 @@ int noteDurations[] = {
   8, 8, 8, 8,
   4, 4
 };
+
+int losemelody[] = {
+  NOTE_D4, NOTE_CS4, NOTE_C4
+};
