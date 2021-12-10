@@ -16,6 +16,7 @@ int joy_orange = A4;
 //int servoPin = 11;
 //int buzzerPin = 13;
 //ezBuzzer buzzer(buzzerPin);
+int song;
 
 //rgb matrix uses: A0, A1, A2, A3, (A4?), 2, 3, 4, 5, 6, 7, 8, 9
 
@@ -40,6 +41,7 @@ void setup() {
   pinMode(joy_yellow, INPUT_PULLUP);
   pinMode(joy_orange, INPUT_PULLUP);
   initScreen();
+  
 
 }
  
@@ -53,10 +55,19 @@ void loop() {
   if (tDelta > screenDelay) {
     switch(gameState) {
     case INIT:
-      if (joy_left || joy_right) {
-        drawInitialScreen();
+      if (joy_left) {
+        //drawInitialScreen();
         gameState = GAME;
+        song = 0;
         clearNotes();
+        clearScreen();
+      }
+      else if (joy_right){
+        //drawInitialScreen();
+        gameState = GAME;
+        song = 1;
+        clearNotes();
+        clearScreen();
       }
       break;
     case GAME:

@@ -10,7 +10,7 @@ bool rain[32][8];
 int tick = 0;
 int note[32];
 int buzzerPin = 13;
-
+extern int song;
 State gameState = INIT;
 int score = 0;
 
@@ -115,13 +115,27 @@ void clearNotes() {
     note[i] = 0;  
   }
 }
+
+void clearScreen(){
+  matrix.fillRect(0, 0, 16, 32, matrix.Color333(0, 0, 0));
+}
+
 int melodycounter =0;
 void gameLoop(int pos) {
   
   int x[6] = {1, 4, 6, 9, 11, 14};
+
+  if (song==0){
   if (tick >= 48/noteDurations[melodycounter]) {
     note[7] = rand() % 3 + 1;
     tick = 0;
+  }
+  }
+  else{
+    if (tick >= 48/noteDurations2[melodycounter]) {
+    note[7] = rand() % 3 + 1;
+    tick = 0;
+  }
   }
 //
   matrix.drawLine(5, 0, 5, 29, matrix.Color333(7, 7, 7));
@@ -145,12 +159,24 @@ void gameLoop(int pos) {
         note[row + 1] = col + 1;
       }
       else {
+
+        if (song==0){
         //tone
         tone(buzzerPin, melody[melodycounter], 1600/noteDurations[melodycounter%sizeof(melody)]);
         Serial.println(melodycounter);
         melodycounter++;
         if (melodycounter>=sizeof(melody)/sizeof(int)){
           melodycounter = 0;
+        }
+        }
+        else{
+          //tone
+          tone(buzzerPin, melody2[melodycounter], 1600/noteDurations2[melodycounter%sizeof(melody2)]);
+          Serial.println(melodycounter);
+          melodycounter++;
+          if (melodycounter>=sizeof(melody2)/sizeof(int)){
+            melodycounter = 0;
+          }
         }
         if (pos == col) {
           note[row] = 0;

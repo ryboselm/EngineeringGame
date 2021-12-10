@@ -16,4 +16,5 @@ void drawInitialScreen();
 void rainLoop();
 void gameLoop(int pos);
 void clearNotes();
+void clearScreen();
 void customRect(int x1, int y1, int x2, int y2, uint32_t c);
